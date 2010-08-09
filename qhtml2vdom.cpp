@@ -37,7 +37,18 @@ QHtml2Vdom::~QHtml2Vdom()
 
 int QHtml2Vdom::process(QCrawlerRecord &record)
 {
-    return 0;
+    static vdom::Window win;
+    bool ret = m_page->setRawHtmlContent(record.url, record.raw_html_content);
+
+    if (ret) {
+        win.Clear();
+        m_webvdom->buildVdom(&win);
+        win.SerializeToString(&record.vdom);
+        record.win = &win;
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 } // end namespace qcontent
